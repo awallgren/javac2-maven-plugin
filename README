@@ -1,0 +1,1 @@
+A Maven plugin that uses IntelliJ's javac2 byte-code instrumentation.
