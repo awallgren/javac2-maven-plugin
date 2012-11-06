@@ -1,1 +1,27 @@
 A Maven plugin that uses IntelliJ's javac2 byte-code instrumentation.
+
+INSTALLATION
+
+Some dependencies are not in Maven Central and thus must be installed in your local repository.
+These dependencies are stored under misc/libs folder and can be installed using next commands:
+mvn install:install-file -Dfile=annotations.jar -DgroupId=com.intellij -DartifactId=annotations -Dversion=11.1.2 -Dpackaging=jar
+mvn install:install-file -Dfile=javac2.jar -DgroupId=com.intellij -DartifactId=javac2 -Dversion=11.1.2 -Dpackaging=jar
+
+After successful maven installation plugin must be installed in local Maven repository. Go to the target directory and install plugin using next command:
+mvn install:install-file -Dfile=javac2-maven-plugin-1.0.1.jar -DgroupId=com.electriccloud -DartifactId=javac2-maven-plugin -Dversion=1.0.1 -Dpackaging=maven-plugin
+
+Plugin can be used in your pom.xml, e.g. in plugins section:
+<plugin>
+    <groupId>com.electriccloud</groupId>
+    <artifactId>javac2-maven-plugin</artifactId>
+    <version>1.0.1</version>
+    <executions>
+        <execution>
+            <id>@NotNull Instrumentation</id>
+            <goals>
+                <goal>instrument</goal>
+            </goals>
+            <phase>process-classes</phase>
+        </execution>
+    </executions>
+</plugin>

@@ -91,12 +91,12 @@
           </execution>
         </executions>
         <dependencies>
-          <dependency>
-            <groupId>org.jfrog.maven.annomojo</groupId>
-            <artifactId>maven-plugin-tools-anno</artifactId>
-            <version>1.4.1</version>
-            <scope>runtime</scope>
-          </dependency>
+            <dependency>
+                <groupId>br.com.ingenieux.maven.annomojo</groupId>
+                <artifactId>org.jfrog.maven.maven-plugin-tools-anno</artifactId>
+                <version>1.4.1</version>
+                <scope>runtime</scope>
+            </dependency>
         </dependencies>
       </plugin>
 
@@ -138,11 +138,15 @@
       <artifactId>maven-plugin-api</artifactId>
       <version>${maven.version}</version>
     </dependency>
+
+    <!-- Must be installed manually, see misc/libs/annotations.jar and README -->
     <dependency>
       <groupId>com.intellij</groupId>
       <artifactId>annotations</artifactId>
       <version>11.1.2</version>
     </dependency>
+
+    <!-- Must be installed manually, see misc/libs/javac2.jar and README -->
     <dependency>
       <groupId>com.intellij</groupId>
       <artifactId>javac2</artifactId>
@@ -154,9 +158,9 @@
       <version>1.8.4</version>
     </dependency>
     <dependency>
-      <groupId>org.jfrog.maven.annomojo</groupId>
-      <artifactId>maven-plugin-anno</artifactId>
-      <version>1.4.1</version>
+        <groupId>br.com.ingenieux.maven.annomojo</groupId>
+        <artifactId>org.jfrog.maven.maven-plugin-tools-anno</artifactId>
+        <version>1.4.1</version>
     </dependency>
   </dependencies>
 
