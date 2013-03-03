@@ -5,11 +5,11 @@
 
   <groupId>com.electriccloud</groupId>
   <artifactId>javac2-maven-plugin</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <packaging>maven-plugin</packaging>
 
   <name>Javac2 Maven Plugin</name>
-  <description>Instruments class files using IntelliJ's javac2 instrumenter</description>
+  <description>Instruments NotNull/Nonnull class files using IntelliJ's javac2 instrumenter</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

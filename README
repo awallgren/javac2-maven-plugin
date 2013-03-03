@@ -1,4 +1,4 @@
-A Maven plugin that uses IntelliJ's javac2 byte-code instrumentation.
+A Maven plugin that uses IntelliJ's javac2 byte-code instrumentation to insert checks for @NotNull/@Nonnull annotations
 
 INSTALLATION
 
