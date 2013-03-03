@@ -23,31 +23,27 @@
 
 package com.electriccloud.maven.javac2;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-
+import com.intellij.ant.AntClassWriter;
+import com.intellij.ant.InstrumentationUtil;
+import com.intellij.ant.PseudoClassLoader;
+import com.intellij.compiler.notNullVerification.NonnullVerifyingInstrumenter;
+import com.intellij.compiler.notNullVerification.NotNullVerifyingInstrumenter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.EmptyVisitor;
 
-import com.intellij.ant.AntClassWriter;
-import com.intellij.ant.InstrumentationUtil;
-import com.intellij.ant.PseudoClassLoader;
-
-import com.intellij.compiler.notNullVerification.NotNullVerifyingInstrumenter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
 
 import static java.io.File.pathSeparator;
 
@@ -205,7 +201,7 @@ public abstract class Javac2MojoSupport
                 if (shadowFile.lastModified() >= file.lastModified()) {
 
                     if (getLog().isDebugEnabled()) {
-                        getLog().debug("Up-to-date @NotNull assertions: "
+                        getLog().debug("Up-to-date @NotNull/@Nonnull assertions: "
                                 + file.getPath());
                     }
 
@@ -242,7 +238,8 @@ public abstract class Javac2MojoSupport
             }
 
             try {
-                instrumentClassFile(loader, file);
+                instrumentClassFileNotNull(loader, file);
+                instrumentClassFileNonnull(loader, file);
 
                 // Set the timestamp of the shadow file
                 if (!shadowFile.setLastModified(file.lastModified())) {
@@ -252,16 +249,16 @@ public abstract class Javac2MojoSupport
                 }
             }
             catch (IOException e) {
-                getLog().warn("Failed to instrument @NotNull assertion for "
+                getLog().warn("Failed to instrument @NotNull/@Nonnull assertion for "
                         + file.getPath() + ": " + e.getMessage(), e);
             }
             catch (MojoExecutionException e) {
-                getLog().warn("Failed to instrument @NotNull assertion for "
+                getLog().warn("Failed to instrument @NotNull/@Nonnull assertion for "
                         + file.getPath() + ": " + e.getMessage(), e);
             }
             catch (Exception e) {
                 throw new MojoExecutionException(
-                    "@NotNull instrumentation failed for " + file.getPath()
+                    "@NotNull/@Nonnull instrumentation failed for " + file.getPath()
                         + ": " + e.toString());
             }
         }
@@ -271,9 +268,9 @@ public abstract class Javac2MojoSupport
 
     //~ Methods ----------------------------------------------------------------
 
-    private static void instrumentClassFile(
+    private static void instrumentClassFileNotNull(
             @NotNull PseudoClassLoader loader,
-            @NotNull File              file)
+            @NotNull File file)
         throws IOException
     {
         FileInputStream inputStream = new FileInputStream(file);
@@ -306,6 +303,47 @@ public abstract class Javac2MojoSupport
             inputStream.close();
         }
     }
+
+    /**
+     * Copy of {@link Javac2MojoSupport#instrumentClassFileNotNull(com.intellij.ant.PseudoClassLoader, java.io.File)} method
+     * which instruments JSR 205 Nonnull annotation
+     */
+    private static void instrumentClassFileNonnull(
+            @NotNull PseudoClassLoader loader,
+            @NotNull File file)
+            throws IOException
+    {
+        FileInputStream inputStream = new FileInputStream(file);
+
+        try {
+            ClassReader reader = new ClassReader(inputStream);
+            ClassWriter writer = new AntClassWriter(getAsmClassWriterFlags(
+                    getClassFileVersion(reader)), loader);
+
+            //
+            NonnullVerifyingInstrumenter instrumenter =
+                    new NonnullVerifyingInstrumenter(writer);
+
+            reader.accept(instrumenter, 0);
+
+            if (!instrumenter.isModification()) {
+                return;
+            }
+
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+            try {
+                fileOutputStream.write(writer.toByteArray());
+            }
+            finally {
+                fileOutputStream.close();
+            }
+        }
+        finally {
+            inputStream.close();
+        }
+    }
+
 
     /**
      * @param   version

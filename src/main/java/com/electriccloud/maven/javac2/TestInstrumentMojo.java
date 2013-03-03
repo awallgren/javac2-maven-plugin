@@ -23,17 +23,11 @@
 
 package com.electriccloud.maven.javac2;
 
-import java.io.File;
-
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.jfrog.maven.annomojo.annotations.*;
 
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
-import org.jfrog.maven.annomojo.annotations.MojoPhase;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresOnline;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresProject;
+import java.io.File;
 
 /**
  * Run @NotNull bytecode instrumentation on
@@ -64,8 +58,7 @@ public class TestInstrumentMojo
     {
 
         try {
-            instrumentNotNull(m_outputDirectory,
-                m_project.getTestClasspathElements());
+            instrumentNotNull(m_outputDirectory, m_project.getTestClasspathElements());
         }
         catch (DependencyResolutionRequiredException e) {
             throw new MojoExecutionException(e.getMessage(), e);
